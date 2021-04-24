@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -507,6 +508,13 @@ func NewStore(dir string) (*Store, error) {
 }
 
 func main() {
+	var listenPort int
+	var listenAddr string
+
+	flag.IntVar(&listenPort, "port", 8080, "port to listen on")
+	flag.StringVar(&listenAddr, "addr", "0.0.0.0", "listen IP to bind")
+	flag.Parse()
+
 	store, err := NewStore(path.Join(os.Getenv("HOME"), ".cache", "podcast-proxy"))
 	if err != nil {
 		panic(err)
@@ -537,5 +545,6 @@ func main() {
 		}
 		c.Data(200, "application/xml; charset=utf-8", []byte(rss))
 	})
-	r.Run()
+
+	r.Run(fmt.Sprintf("%s:%d", listenAddr, listenPort))
 }
