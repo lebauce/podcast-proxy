@@ -1,0 +1,15 @@
+[Unit]
+Description=Podcast proxy
+After=network-online.target
+
+[Service]
+Type=simple
+User=podcast-proxy
+Group=podcast-proxy
+UMask=007
+ExecStart=/usr/bin/podcast-proxy
+Restart=on-failure
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target
