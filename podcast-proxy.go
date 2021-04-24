@@ -530,7 +530,7 @@ func main() {
 
 		html := `<html><body><ul>`
 		for _, emission := range emissions {
-			html += fmt.Sprintf("<li><a href='/emissions/%s/rss'>%s</a></li>", emission.name, emission.name)
+			html += fmt.Sprintf("<li><a href='/emissions/%s/rss'>%s</a></li>", emission.name, emission.feed.Title)
 		}
 		html += `</ul></body></html>`
 
