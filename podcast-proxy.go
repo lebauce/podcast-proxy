@@ -530,7 +530,12 @@ func main() {
 
 		html := `<html><body><ul>`
 		for _, emission := range emissions {
-			html += fmt.Sprintf("<li><a href='/emissions/%s/rss'>%s</a></li>", emission.name, emission.feed.Title)
+			html += "<p>"
+			if image := emission.feed.Image; image != nil {
+				html += fmt.Sprintf("<img src=\"%s\" width=50 style=\"vertical-align: middle\"/>", image.Url)
+			}
+			html += fmt.Sprintf("&nbsp;<a href='/emissions/%s/rss'>%s</a>", emission.name, emission.feed.Title)
+			html += "</p>"
 		}
 		html += `</ul></body></html>`
 
