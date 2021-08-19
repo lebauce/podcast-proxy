@@ -69,6 +69,10 @@ func (c *HTTPCache) fetch(method, url string) (bytes []byte, header http.Header,
 		return nil, nil, fmt.Errorf("invalid method '%s'", method)
 	}
 
+	if resp.StatusCode >= 400 {
+		return bytes, header, fmt.Errorf("%d: %s", resp.StatusCode, resp.Status)
+	}
+
 	return bytes, header, nil
 }
 
