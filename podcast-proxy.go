@@ -450,11 +450,6 @@ func (s *Store) RSS(name string) (string, error) {
 		return "", err
 	}
 
-	cachedPath := s.getRSSPath(name)
-	if err := ioutil.WriteFile(cachedPath, []byte(rss), 0644); err != nil {
-		return "", err
-	}
-
 	return rss, nil
 }
 
@@ -475,7 +470,22 @@ func (s *Store) loadEmission(name string) (*Emission, error) {
 }
 
 func (s *Store) Get(name string) (*Emission, error) {
-	return s.loadEmission(name)
+	emission, err := s.loadEmission(name)
+	if err != nil {
+		return nil, err
+	}
+
+	rss, err := emission.RSS()
+	if err != nil {
+		return nil, err
+	}
+
+	cachedPath := s.getRSSPath(name)
+	if err := ioutil.WriteFile(cachedPath, []byte(rss), 0644); err != nil {
+		return nil, err
+	}
+
+	return emission, nil
 }
 
 func (s *Store) List() ([]*Emission, error) {
@@ -538,8 +548,31 @@ func main() {
 			if image := emission.feed.Image; image != nil {
 				html += fmt.Sprintf("<img src=\"%s\" width=50 style=\"vertical-align: middle\"/>", image.Url)
 			}
-			html += fmt.Sprintf("&nbsp;<a href='/emissions/%s/rss'>%s</a>", emission.name, emission.feed.Title)
+			html += fmt.Sprintf("<b>%s</b><br>", emission.feed.Title)
+			html += fmt.Sprintf("<div><a href='/emissions/%s/rss'>RSS</a>", emission.name)
+			html += fmt.Sprintf("&nbsp;<a href='/emissions/%s'>Episodes</a></div>", emission.name)
+			html += "</p><hr />"
+		}
+		html += `</ul></body></html>`
+
+		c.Data(200, "text/html; charset=utf-8", []byte(html))
+	})
+	r.GET("/emissions/:name", func(c *gin.Context) {
+		name := c.Param("name")
+
+		emission, err := store.Get(name)
+		if err != nil {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
+			return
+		}
+
+		html := `<html><body><ul>`
+		for _, item := range emission.feed.Items {
+			html += "<p>"
+			html += fmt.Sprintf("<b>%s</b><br>", item.Title)
+			html += fmt.Sprintf("<a href='%s'>Download</a>", item.Enclosure.Url)
 			html += "</p>"
+			html += "<hr />"
 		}
 		html += `</ul></body></html>`
 
