@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"regexp"
 
@@ -30,12 +29,8 @@ func (c *FranceCultureCrawler) Fetch(name string, cachedRss *feeds.RssFeedXml) (
 		return nil, err
 	}
 
-	re := regexp.MustCompile("https://radiofrance-podcast.net/podcast09/rss_[0-9]+.xml")
+	re := regexp.MustCompile("https?://radiofrance-podcast.net/podcast09/rss_[0-9]+.xml")
 	rssFeedLink := re.FindString(string(content))
-
-	if rssFeedLink == "" {
-		return nil, errors.New("failed to find RSS feed")
-	}
 
 	return c.getFeed(url, doc, rssFeedLink, cachedRss)
 }

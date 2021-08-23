@@ -42,18 +42,15 @@ func (c *FranceInterCrawler) Fetch(name string, cachedRss *feeds.RssFeedXml) (*f
 		}
 	}
 
-	if rssFeedLink == "" {
-		return nil, errors.New("failed to find RSS feed")
-	}
-
 	return c.getFeed(url, doc, rssFeedLink, cachedRss)
 }
 
 func newFranceInterCrawler(cache *HTTPCache) *FranceInterCrawler {
 	return &FranceInterCrawler{
 		RadioFranceCrawler: RadioFranceCrawler{
-			cache: cache,
-			url:   "https://www.franceinter.fr",
+			cache:           cache,
+			url:             "https://www.franceinter.fr",
+			episodeSelector: "//figure",
 		},
 	}
 }
