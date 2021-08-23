@@ -61,7 +61,7 @@ func (c *RadioFranceCrawler) getFeed(url string, doc *html.Node, rssFeedLink str
 
 		if imageNode := htmlquery.FindOne(doc, "//div[@class='cover-picture']//img"); imageNode != nil {
 			for _, attr := range imageNode.Attr {
-				if attr.Key == "src" {
+				if attr.Key == "data-dejavu-src" {
 					image = attr.Val
 				}
 			}
