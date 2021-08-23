@@ -32,15 +32,19 @@ func (c *RadioFranceCrawler) getFeed(url string, doc *html.Node, rssFeedLink str
 	if rssFeedLink != "" {
 		feed, rssFeed, err = c.fetchRSSFeed(rssFeedLink)
 		if err != nil {
-			return nil, err
+			log.Printf("Failed to reach rss feed: %s", err)
 		}
 
-		if len(rssFeed.Channel.Items) == 0 {
-			return nil, errors.New("empty RSS feed")
-		}
+		if rssFeed != nil {
+			if len(rssFeed.Channel.Items) == 0 {
+				return nil, errors.New("empty RSS feed")
+			}
 
-		templateItem = rssFeed.Channel.Items[0]
-	} else {
+			templateItem = rssFeed.Channel.Items[0]
+		}
+	}
+
+	if feed == nil {
 		var description, title, image string
 
 		if meta := htmlquery.FindOne(doc, "//meta[@name='description']"); meta != nil {
